@@ -23,11 +23,9 @@ namespace local_confetti\hook;
  */
 class hook_callbacks {
     public static function before_http_headers_callback(): void {
-        global $PAGE, $SESSION;
+        global $PAGE, $SESSION, $USER;
 
         if (!empty($SESSION->throw_confetti)) {
-            error_log('ARO: BEFORE HTTP HEADERS - SESSION FLAG FOUND');
-
             unset($SESSION->throw_confetti);
 
             $settings = [
@@ -36,14 +34,15 @@ class hook_callbacks {
             ];
             $PAGE->requires->js_call_amd('local_confetti/confetti', 'init', [$settings]);
 
-            if($PAGE->pagetype == 'my-index'){
+            if ($PAGE->pagetype == 'my-index'){
                 set_user_preference('show_login_confetti', 'no');
             }
 
-
-            error_log('ARO: AFTER JS CALL IN BEFORE HTTP HEADERS');
-        } else {
-            error_log('ARO: BEFORE HTTP HEADERS - NO SESSION FLAG - NOT LOADING JS');
+            $event = \local_confetti\event\confetti_thrown::create([
+                'context' => \core\context\system::instance(),
+                'userid' => $USER->id,
+            ]);
+            $event->trigger();
         }
     }
 }
