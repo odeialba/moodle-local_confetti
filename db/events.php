@@ -49,5 +49,10 @@ $observers = [
         'eventname' => mod_forum\event\subscription_created::class,
         'callback' => '\local_confetti\observer::confetti_callback',
         'internal' => false,
+    ],
+    [
+	'eventname' => 'mod_pi1\event\confetti_triggered',
+        'callback' => '\local_confetti\observer::confetti_callback',
+        'internal' => false,
     ]
 ];
